@@ -29,7 +29,7 @@ services:
     environment:
       - DB_HOST=mysql
       - DB_USER=root
-      - DB_PASSWORD=root
+      - DB_PASSWORD=YourRootPassword
       - DB_NAME=example
       - DB_PORT=3306
       - NODE_ENV=development
@@ -40,7 +40,7 @@ services:
     volumes:
       - ./mysql-data:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: YourRootPassword
       MYSQL_DATABASE: example
 
 volumes:

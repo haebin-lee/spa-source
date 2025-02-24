@@ -11,6 +11,7 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
+  authPlugin: "mysql_native_password",
 });
 
 async function query(sql, params = []) {
