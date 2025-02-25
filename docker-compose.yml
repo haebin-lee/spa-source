@@ -28,13 +28,13 @@ services:
       - mysql
     environment:
       - DB_HOST=mysql
-      - DB_USER=root
+      - DB_USER=admin
       - DB_PASSWORD=YourRootPassword
       - DB_NAME=example
       - DB_PORT=3306
       - NODE_ENV=development
   mysql:
-    image: mysql:5.7
+    image: mysql:5.6
     ports:
       - "3306:3306"
     volumes:
@@ -42,6 +42,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: YourRootPassword
       MYSQL_DATABASE: example
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: YourRootPassword
 
 volumes:
   mysql-data:
