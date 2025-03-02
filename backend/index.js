@@ -11,7 +11,7 @@ app.use(express.json());
 // Enable CORS for all routes
 app.use(
   cors({
-    origin: "http://localhost:3000", // Allow your frontend URL
+    origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -31,6 +31,45 @@ app.get("/api/health", async (req, res) => {
       message: "Database connection failed",
       error: error.message,
     });
+  }
+});
+
+app.get("/api/search/history", async (req, res) => {
+  try {
+    const [rows] = await query("SELECT id, command, result FROM emoji");
+    res.json(rows);
+  } catch (error) {
+    console.error("Error getting search history:", error);
+    res.status(500).json({ status: "error", message: error.message });
+  }
+});
+
+app.post("/api/search", async (req, res) => {
+  try {
+    const { searchTerm } = req.body;
+
+    if (!searchTerm) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "searchTerm is required" });
+    }
+
+    // Default result for new commands
+    const defaultResult = "😊";
+
+    const [result] = await query(
+      "INSERT INTO emoji (command, result) VALUES (?, ?)",
+      [searchTerm, defaultResult]
+    );
+
+    res.status(201).json({
+      status: "success",
+      message: "Search term saved",
+      id: result.insertId,
+    });
+  } catch (error) {
+    console.error("Error saving search term:", error);
+    res.status(500).json({ status: "error", message: error.message });
   }
 });
 

@@ -14,7 +14,7 @@ services:
     depends_on:
       - backend
     environment:
-      - NEXT_APP_BACKEND_URL=http://localhost:8080
+      - NEXT_APP_BACKEND_URL=http://backend:8080
     networks:
       - app-network
 
