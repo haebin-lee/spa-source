@@ -22,7 +22,7 @@ app.get("/", (req, res) => {
 
 app.get("/api/health", async (req, res) => {
   try {
-    const result = await query("SELECT 1 as value");
+    const [result] = await query("SELECT 1 as value");
     res.json({ status: "ok", result: result[0].value });
   } catch (error) {
     res.json({
