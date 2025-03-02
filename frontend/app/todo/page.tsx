@@ -7,7 +7,7 @@ interface SearchHistoryItem {
   command: string;
 }
 
-export default function SearchPage() {
+export default function TodoPage() {
   const [searchText, setSearchText] = useState("");
   const [searchHistory, setSearchHistory] = useState<SearchHistoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -20,10 +20,8 @@ export default function SearchPage() {
   const fetchSearchHistory = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/search/history`
-      );
-      setSearchHistory(response.data);
+      const response = await axios.get("/api/todo");
+      setSearchHistory(response.data.result);
     } catch (err: unknown) {
       console.error("Error fetching search history:", err);
       setError(
@@ -37,16 +35,13 @@ export default function SearchPage() {
   // Function to save search to API
   const saveSearch = async (command: string) => {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/search`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ command }),
-        }
-      );
+      const response = await fetch("/api/todo", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ command }),
+      });
 
       if (!response.ok) {
         throw new Error(`Failed to save search: ${response.status}`);
