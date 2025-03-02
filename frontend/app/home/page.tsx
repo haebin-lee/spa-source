@@ -2,12 +2,16 @@
 "use client";
 import axios from "axios";
 import { useState, useEffect } from "react";
+interface SearchHistoryItem {
+  id?: string | number;
+  command: string;
+}
 
 export default function SearchPage() {
   const [searchText, setSearchText] = useState("");
-  const [searchHistory, setSearchHistory] = useState([]);
+  const [searchHistory, setSearchHistory] = useState<SearchHistoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchSearchHistory();
@@ -17,39 +21,47 @@ export default function SearchPage() {
     try {
       setIsLoading(true);
       const response = await axios.get(
-        process.env.NEXT_PUBLIC_BACKEND_URL + "/api/search/history"
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/search/history`
       );
       setSearchHistory(response.data);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Error fetching search history:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to fetch search history"
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   // Function to save search to API
-  const saveSearch = async (command: Text) => {
+  const saveSearch = async (command: string) => {
     try {
-      const response = await fetch("http://localhost:8080/api/search", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ command }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/search`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ command }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`Failed to save search: ${response.status}`);
       }
 
       fetchSearchHistory();
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Error saving search:", err);
-      setError(err.message);
+      setError(
+        err instanceof Error ? err.message : "Failed to fetch search history"
+      );
     }
   };
 
-  const handleSearch = (e) => {
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!searchText.trim()) return;
@@ -96,7 +108,7 @@ export default function SearchPage() {
           <div className="flex flex-col gap-2">
             {searchHistory.map((item) => (
               <div
-                key={item.id || Math.random()}
+                key={item.id || Math.random().toString()}
                 className="flex items-center gap-2 bg-gray-100 p-2 rounded-md"
               >
                 <input
