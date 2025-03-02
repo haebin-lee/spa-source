@@ -8,7 +8,6 @@ const app = express();
 const port = process.env.port || 8080;
 
 app.use(express.json());
-// Enable CORS for all routes
 app.use(
   cors({
     origin: "*",
@@ -46,20 +45,19 @@ app.get("/api/search/history", async (req, res) => {
 
 app.post("/api/search", async (req, res) => {
   try {
-    const { searchTerm } = req.body;
+    const { command } = req.body;
 
-    if (!searchTerm) {
+    if (!command) {
       return res
         .status(400)
-        .json({ status: "error", message: "searchTerm is required" });
+        .json({ status: "error", message: "command is required" });
     }
 
-    // Default result for new commands
     const defaultResult = "😊";
 
     const [result] = await query(
       "INSERT INTO emoji (command, result) VALUES (?, ?)",
-      [searchTerm, defaultResult]
+      [command, defaultResult]
     );
 
     res.status(201).json({

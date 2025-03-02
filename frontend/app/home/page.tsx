@@ -1,59 +1,47 @@
 // pages/search.js
 "use client";
+import axios from "axios";
 import { useState, useEffect } from "react";
 
 export default function SearchPage() {
   const [searchText, setSearchText] = useState("");
-  const [tags, setTags] = useState([]);
   const [searchHistory, setSearchHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Fetch search history on component mount
   useEffect(() => {
     fetchSearchHistory();
   }, []);
 
-  // Function to fetch search history from API
   const fetchSearchHistory = async () => {
     try {
       setIsLoading(true);
-      const backendUrl =
-        process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
-      const response = await fetch(`${backendUrl}/api/search/history`);
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch search history: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setSearchHistory(data);
+      const response = await axios.get(
+        process.env.NEXT_PUBLIC_BACKEND_URL + "/api/search/history"
+      );
+      setSearchHistory(response.data);
     } catch (err) {
       console.error("Error fetching search history:", err);
-      setError(err.message);
     } finally {
       setIsLoading(false);
     }
   };
 
   // Function to save search to API
-  const saveSearch = async (searchTerm) => {
+  const saveSearch = async (command: Text) => {
     try {
-      const backendUrl =
-        process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
-      const response = await fetch(`${backendUrl}/api/search/save`, {
+      const response = await fetch("http://localhost:8080/api/search", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ searchTerm }),
+        body: JSON.stringify({ command }),
       });
 
       if (!response.ok) {
         throw new Error(`Failed to save search: ${response.status}`);
       }
 
-      // Refresh search history after saving
       fetchSearchHistory();
     } catch (err) {
       console.error("Error saving search:", err);
@@ -61,14 +49,10 @@ export default function SearchPage() {
     }
   };
 
-  // Handle search submission
   const handleSearch = (e) => {
     e.preventDefault();
 
     if (!searchText.trim()) return;
-
-    // Add to tags
-    setTags([...tags, searchText]);
 
     // Save to API
     saveSearch(searchText);
@@ -77,33 +61,22 @@ export default function SearchPage() {
     setSearchText("");
   };
 
-  // Remove tag
-  const removeTag = (index) => {
-    setTags(tags.filter((_, i) => i !== index));
-  };
-
-  // Use search from history
-  const useHistoryItem = (searchTerm) => {
-    setTags([...tags, searchTerm]);
-  };
-
   return (
     <div className="container mx-auto p-4 max-w-xl">
-      {/* Search Form */}
       <form onSubmit={handleSearch} className="mb-6">
         <div className="flex">
           <input
             type="text"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
-            placeholder="Enter search term..."
+            placeholder="Todo.."
             className="flex-grow px-4 py-2 border border-gray-300 rounded-l-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
           />
           <button
             type="submit"
             className="bg-blue-500 text-white px-6 py-2 rounded-r-md hover:bg-blue-600 transition-colors"
           >
-            Search
+            save
           </button>
         </div>
       </form>
@@ -115,45 +88,23 @@ export default function SearchPage() {
         </div>
       )}
 
-      {/* Tags Section */}
-      {tags.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold mb-3">Current Search Tags</h2>
-          <div className="flex flex-wrap gap-2">
-            {tags.map((tag, index) => (
-              <div
-                key={`tag-${index}`}
-                className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center"
-              >
-                {tag}
-                <button
-                  onClick={() => removeTag(index)}
-                  className="ml-2 text-blue-600 hover:text-blue-800"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Search History Section */}
+      {/* List Section */}
       <div>
-        <h2 className="text-lg font-semibold mb-3">Search History</h2>
-
         {isLoading ? (
-          <p className="text-gray-500">Loading search history...</p>
+          <p className="text-gray-500">Loading..</p>
         ) : searchHistory.length > 0 ? (
-          <div className="flex flex-wrap gap-2">
-            {searchHistory.map((item, index) => (
-              <button
-                key={`history-${index}`}
-                onClick={() => useHistoryItem(item.searchTerm)}
-                className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm transition-colors"
+          <div className="flex flex-col gap-2">
+            {searchHistory.map((item) => (
+              <div
+                key={item.id || Math.random()}
+                className="flex items-center gap-2 bg-gray-100 p-2 rounded-md"
               >
-                {item.searchTerm}
-              </button>
+                <input
+                  type="checkbox"
+                  className="form-checkbox h-5 w-5 text-blue-600 rounded"
+                />
+                <span className="flex-grow">{item.command}</span>
+              </div>
             ))}
           </div>
         ) : (
