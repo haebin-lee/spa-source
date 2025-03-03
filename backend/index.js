@@ -33,52 +33,36 @@ app.get("/api/health", async (req, res) => {
   }
 });
 
-app.get("/api/search/history", async (req, res) => {
+app.get("/api/todo", async (req, res) => {
   try {
-    const [rows] = await query("SELECT id, command, result FROM emoji");
+    const [rows] = await query(
+      "SELECT id, todo, checked, created_timestamp FROM todos ORDER BY created_timestamp DESC"
+    );
     res.json(rows);
   } catch (error) {
-    console.error("Error getting search history:", error);
+    console.error("Error getting todo list:", error);
     res.status(500).json({ status: "error", message: error.message });
   }
 });
 
-app.post("/api/search", async (req, res) => {
+app.post("/api/todo", async (req, res) => {
   try {
-    const { command } = req.body;
+    const { todo } = req.body;
 
-    if (!command) {
+    if (!todo) {
       return res
         .status(400)
-        .json({ status: "error", message: "command is required" });
+        .json({ status: "error", message: "todo is required" });
     }
 
-    const defaultResult = "😊";
-
-    const [result] = await query(
-      "INSERT INTO emoji (command, result) VALUES (?, ?)",
-      [command, defaultResult]
-    );
+    const [result] = await query("INSERT INTO todos (todo) VALUES (?)", [todo]);
 
     res.status(201).json({
       status: "success",
-      message: "Search term saved",
       id: result.insertId,
     });
   } catch (error) {
-    console.error("Error saving search term:", error);
-    res.status(500).json({ status: "error", message: error.message });
-  }
-});
-
-app.get("/api/test-integration", (req, res) => {
-  try {
-    res.json({
-      status: "ok",
-      message: "Backend API is working correctly",
-      timestamp: new Date().toISOString(),
-    });
-  } catch (error) {
+    console.error("Error saving todo:", error);
     res.status(500).json({ status: "error", message: error.message });
   }
 });

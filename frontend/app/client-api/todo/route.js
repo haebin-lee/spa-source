@@ -2,8 +2,7 @@ import axios from "axios";
 export async function GET() {
   try {
     const backendUrl = process.env.NEXT_APP_BACKEND_URL;
-    const url = `${backendUrl}/api/search/history`;
-    console.log("url ", url);
+    const url = `${backendUrl}/api/todo`;
     const response = await axios.get(url);
     console.log("response", response);
     return Response.json({ status: "ok", result: response.data });
@@ -18,25 +17,17 @@ export async function POST(request) {
   try {
     const backendUrl = process.env.NEXT_APP_BACKEND_URL;
 
-    // request 객체에서 JSON 데이터 추출
     const body = await request.json();
-    const { command } = body;
-    console.log("command", command);
-    if (!command) {
+    const { todo } = body;
+    if (!todo) {
       return Response.json(
-        { status: "error", message: "command is required" },
+        { status: "error", message: "todo is required" },
         { status: 400 }
       );
     }
-
-    const requestData = { command };
-    console.log("requestData", requestData);
-
-    const url = `${backendUrl}/api/search`;
-    console.log("url ", url);
-
+    const url = `${backendUrl}/api/todo`;
+    const requestData = { todo };
     const response = await axios.post(url, requestData);
-    console.log("response", response);
 
     return Response.json({ status: "ok", result: response.data });
   } catch (error) {
