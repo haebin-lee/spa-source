@@ -1,7 +1,5 @@
 # Todo Single Page Application(SPA)
 
-Brief description of your project - what it does and what problem it solves.
-
 ## Architecture
 
 This project consists of:
