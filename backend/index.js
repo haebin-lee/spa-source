@@ -67,6 +67,38 @@ app.post("/api/todo", async (req, res) => {
   }
 });
 
+app.put("/api/todo/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { checked } = req.body;
+
+    if (checked === undefined) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "checked status is required" });
+    }
+
+    const [result] = await query("UPDATE todos SET checked = ? WHERE id = ?", [
+      checked,
+      id,
+    ]);
+
+    if (result.affectedRows === 0) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "Todo not found" });
+    }
+
+    res.json({
+      status: "success",
+      message: "Todo updated successfully",
+    });
+  } catch (error) {
+    console.error("Error updating todo:", error);
+    res.status(500).json({ status: "error", message: error.message });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
