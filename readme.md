@@ -10,6 +10,10 @@ This project consists of:
 - Backend: Express.js API
 - Database: MySQL
 
+## Demo
+
+![Todo App Demo](./assets/demo.gif)
+
 ## Prerequisites
 
 - [Docker](https://www.docker.com/get-started)
@@ -22,9 +26,35 @@ This project consists of:
 
 ```bash
 git clone https://github.com/haebin-lee/spa-source.git
-cd your-repo-name
+cd spa-source
 ```
+
+### Run with Docker Compose
 
 ```bash
+docker compose up --build -d
+```
+
+### Access the application
+
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8080
+
+### Project Structure
 
 ```
+├── docker-compose.yml
+├── frontend/               # Next.js application
+│   ├── Dockerfile
+│   └── ...
+├── backend/                # Express.js API
+│   ├── Dockerfile
+│   └── ...
+└── README.md
+```
+
+### Features
+
+- Todo creation
+- Mark todos as complete/incomplete
+- List all todos
