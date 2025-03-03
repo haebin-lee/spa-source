@@ -27,6 +27,24 @@ git clone https://github.com/haebin-lee/spa-source.git
 cd spa-source
 ```
 
+### Environment Set up
+
+The project requires environment variables to be set up before running. Sample environment files are provided:
+
+- For the frontend:
+
+```
+cd frontend
+cp .env.example .env
+```
+
+- For the backend:
+
+```
+cd backend
+cp .env.example .env
+```
+
 ### Run with Docker Compose
 
 ```bash
